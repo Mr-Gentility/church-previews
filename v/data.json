@@ -1,0 +1,122 @@
+[
+ {
+  "slug": "rccg-victory-house-welling",
+  "name": "RCCG Victory House for All Nations",
+  "short": "Victory House for All Nations",
+  "area": "Welling",
+  "city": "London",
+  "country": "UK",
+  "address": "138-140 Upper Wickham Lane, Welling DA16 3DP",
+  "email": "rccgwelling@btconnect.com",
+  "phone": "",
+  "cur": "GBP"
+ },
+ {
+  "slug": "rccg-testimony-assembly-romford",
+  "name": "RCCG Testimony Assembly",
+  "short": "Testimony Assembly",
+  "area": "Harold Hill",
+  "city": "London",
+  "country": "UK",
+  "address": "Heaton Way, Harold Hill, Romford RM3 7EU",
+  "email": "rccgtestimonyassembly@yahoo.com",
+  "phone": "",
+  "cur": "GBP"
+ },
+ {
+  "slug": "rccg-his-glory-arena",
+  "name": "RCCG His Glory Arena",
+  "short": "His Glory Arena",
+  "area": "Abbey Wood",
+  "city": "London",
+  "country": "UK",
+  "address": "",
+  "email": "rccghisgloryarena@gmail.com",
+  "phone": "",
+  "cur": "GBP"
+ },
+ {
+  "slug": "rccg-light-house-assembly-hackney",
+  "name": "RCCG Light House Assembly Hackney",
+  "short": "Light House Assembly",
+  "area": "Hackney",
+  "city": "London",
+  "country": "UK",
+  "address": "Unit 7b Bison House, Sedgwick Street, Hackney E9 6AA",
+  "email": "info@rccglhahackney.org.uk",
+  "phone": "",
+  "cur": "GBP"
+ },
+ {
+  "slug": "rccg-inspiration-house-old-street",
+  "name": "RCCG Inspiration House Old Street",
+  "short": "Inspiration House",
+  "area": "Old Street",
+  "city": "London",
+  "country": "UK",
+  "address": "",
+  "email": "inspirationhouseoldstreet@gmail.com",
+  "phone": "",
+  "cur": "GBP"
+ },
+ {
+  "slug": "rccg-covenant-restoration-assembly",
+  "name": "RCCG Covenant Restoration Assembly",
+  "short": "Covenant Restoration Assembly",
+  "area": "Eltham",
+  "city": "London",
+  "country": "UK",
+  "address": "Crown Woods College Hall, 145 Bexley Road, Eltham SE9 2PT",
+  "email": "rccg.cra2007@yahoo.co.uk",
+  "phone": "",
+  "cur": "GBP"
+ },
+ {
+  "slug": "rccg-anchor-for-all-souls",
+  "name": "RCCG The Anchor for All Souls",
+  "short": "The Anchor for All Souls",
+  "area": "Bexleyheath",
+  "city": "London",
+  "country": "UK",
+  "address": "Anchor Hub, 19 Upland Road, Bexleyheath DA7 4NR",
+  "email": "admin@theanchorparish.org.uk",
+  "phone": "",
+  "cur": "GBP"
+ },
+ {
+  "slug": "rccg-house-of-judah",
+  "name": "RCCG House of Judah",
+  "short": "House of Judah",
+  "area": "Thamesmead",
+  "city": "London",
+  "country": "UK",
+  "address": "",
+  "email": "rccgjudah@yahoo.co.uk",
+  "phone": "",
+  "cur": "GBP"
+ },
+ {
+  "slug": "rccg-his-grace-parish",
+  "name": "RCCG His Grace Parish",
+  "short": "His Grace Parish",
+  "area": "Stockwell",
+  "city": "London",
+  "country": "UK",
+  "address": "",
+  "email": "rccghisgraceparish2012@gmail.com",
+  "phone": "",
+  "cur": "GBP"
+ },
+ {
+  "slug": "rccg-peace-haven-belvedere",
+  "name": "RCCG Peace Haven",
+  "short": "Peace Haven",
+  "area": "Belvedere",
+  "city": "London",
+  "country": "UK",
+  "address": "",
+  "email": "rccgpeacehaven1@gmail.com",
+  "phone": "",
+  "cur": "GBP"
+ }
+]

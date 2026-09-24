@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex, nofollow">
+<title>Unsubscribe · Mr Gentility Web Design</title>
+<style>
+body{margin:0;min-height:100vh;display:grid;place-items:center;background:#f6f3ee;font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif;color:#23262e;padding:20px}
+.card{background:#fff;border:1px solid #ebe5d9;border-radius:14px;max-width:460px;width:100%;padding:32px;box-shadow:0 10px 30px rgba(0,0,0,.06)}
+h1{font-family:Georgia,serif;font-size:26px;margin:0 0 10px;color:#0e1a36}p{line-height:1.6;color:#555;margin:0 0 16px}
+a.btn{display:inline-block;background:#0e1a36;color:#fff;text-decoration:none;font-weight:700;padding:13px 22px;border-radius:8px}
+.small{font-size:13px;color:#888;margin-top:18px}
+</style></head><body><div class="card">
+<h1>Unsubscribe</h1>
+<p id="msg">We're sorry to see you go. Tap the button below to send us a one-line unsubscribe email, and we won't contact you again.</p>
+<a class="btn" id="btn" href="mailto:mrgentilitywebdesign@gmail.com?subject=Unsubscribe">Send unsubscribe request</a>
+<p class="small">Or reply "unsubscribe" to any email from us. Mr Gentility Web Design · Lagos, Nigeria · mrgentilitywebdesign@gmail.com</p>
+</div>
+<script>
+const c=new URLSearchParams(location.search).get('c')||'';
+if(c){document.getElementById('btn').href='mailto:mrgentilitywebdesign@gmail.com?subject='+encodeURIComponent('Unsubscribe '+c)+'&body='+encodeURIComponent('Please remove us from your mailing list. ('+c+')');}
+</script></body></html>

@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Church Website Preview</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+:root{
+  --navy:#0e1a36;--navy2:#172a55;--gold:#d4a645;--gold2:#f0cf7e;--goldsoft:#f7ecd2;
+  --cream:#fbf8f2;--ink:#1a2033;--muted:#5f6679;--white:#fff;--line:#e8e2d4;
+  --serif:Georgia,"Times New Roman",serif;--sans:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);color:var(--ink);background:var(--cream);line-height:1.6;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+svg.scene{position:absolute;inset:0;width:100%;height:100%;display:block}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+.eyebrow{color:var(--gold);letter-spacing:.22em;font-size:12px;font-weight:700;text-transform:uppercase}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:13px 26px;border-radius:999px;font-weight:700;font-size:14px;transition:.25s}
+.btn-gold{background:linear-gradient(135deg,var(--gold2),var(--gold));color:var(--navy);box-shadow:0 8px 24px rgba(212,166,69,.35)}
+.btn-gold:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(212,166,69,.5)}
+.btn-line{border:1.5px solid rgba(255,255,255,.75);color:#fff}
+.btn-line:hover{background:#fff;color:var(--navy)}
+.btn-navy{background:var(--navy);color:#fff}
+.btn-navy:hover{background:var(--navy2)}
+
+/* ---------- header ---------- */
+.site-head{position:fixed;top:0;left:0;right:0;z-index:50;transition:.3s}
+.ribbon{background:var(--gold);color:var(--navy);font-size:12px;font-weight:700;text-align:center;padding:5px 12px}
+.topbar{background:rgba(8,14,30,.55);color:rgba(255,255,255,.85);font-size:13px;transition:.3s}
+.topbar .wrap{display:flex;justify-content:space-between;align-items:center;height:38px;gap:16px}
+.topbar .info{display:flex;gap:22px;align-items:center}
+.topbar .info span{display:flex;align-items:center;gap:6px;white-space:nowrap}
+.topbar svg{width:14px;height:14px;stroke:var(--gold2);fill:none;stroke-width:2}
+.socials{display:flex;gap:12px}
+.socials a{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.1)}
+.socials a:hover{background:var(--gold)}
+.socials svg{stroke:#fff}
+.navbar .wrap{display:flex;align-items:center;justify-content:space-between;height:76px}
+.site-head.solid .navbar{background:rgba(14,26,54,.97);box-shadow:0 6px 30px rgba(0,0,0,.25)}
+.site-head.solid .topbar{background:#08101f}
+.brand{display:flex;align-items:center;gap:12px;color:#fff}
+.brand svg{width:46px;height:46px}
+.brand b{font-family:var(--serif);font-size:23px;line-height:1;display:block}
+.brand b em{color:var(--gold2);font-style:normal}
+.brand small{font-size:10px;letter-spacing:.25em;text-transform:uppercase;opacity:.75}
+.menu{display:flex;align-items:center;gap:4px;list-style:none}
+.menu>li{position:relative}
+.menu>li>a,.menu>li>button{display:flex;align-items:center;gap:5px;color:#fff;font-size:14.5px;font-weight:600;padding:10px 13px;border-radius:8px}
+.menu>li>a:hover,.menu>li>button:hover,.menu>li:hover>button{color:var(--gold2)}
+.menu .caret{width:10px;height:10px;stroke:currentColor;fill:none;stroke-width:2.5;transition:.2s}
+.menu>li:hover .caret{transform:rotate(180deg)}
+.drop{position:absolute;top:100%;left:0;min-width:220px;background:#fff;border-radius:12px;padding:8px;box-shadow:0 20px 50px rgba(0,0,0,.2);opacity:0;visibility:hidden;transform:translateY(10px);transition:.2s;list-style:none}
+.menu>li:hover .drop{opacity:1;visibility:visible;transform:none}
+.drop a{display:block;padding:10px 14px;border-radius:8px;font-size:14px;color:var(--ink);font-weight:500}
+.drop a:hover{background:var(--goldsoft);color:var(--navy)}
+.nav-cta{display:flex;align-items:center;gap:10px}
+.burger{display:none;width:44px;height:44px;border-radius:10px;background:rgba(255,255,255,.12)}
+.burger span{display:block;width:20px;height:2px;background:#fff;margin:4px auto;border-radius:2px}
+
+/* mobile drawer */
+.drawer-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:60;opacity:0;visibility:hidden;transition:.3s}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(340px,88vw);background:var(--navy);z-index:61;transform:translateX(100%);transition:.35s;overflow:auto;padding:22px;color:#fff}
+body.drawer-open .drawer{transform:none}
+body.drawer-open .drawer-bg{opacity:1;visibility:visible}
+.drawer .close{position:absolute;top:16px;right:16px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.1);font-size:22px}
+.drawer nav{margin-top:56px}
+.drawer details{border-bottom:1px solid rgba(255,255,255,.1)}
+.drawer summary,.drawer .dl{display:block;padding:14px 4px;font-weight:600;list-style:none;cursor:pointer}
+.drawer summary::after{content:"+";float:right;color:var(--gold2)}
+.drawer details[open] summary::after{content:"–"}
+.drawer details a{display:block;padding:8px 16px;color:rgba(255,255,255,.75);font-size:14px}
+.drawer .dl{border-bottom:1px solid rgba(255,255,255,.1)}
+
+/* ---------- hero ---------- */
+.hero{position:relative;height:100vh;min-height:680px;max-height:980px;overflow:hidden;color:#fff;background:var(--navy)}
+.slide{position:absolute;inset:0;opacity:0;transition:opacity 1.2s ease}
+.slide.active{opacity:1;z-index:1}
+.slide .bg{position:absolute;inset:0;transform:scale(1);transition:transform 8s ease-out}
+.slide.active .bg{transform:scale(1.08)}
+.slide::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(8,14,30,.78) 0%,rgba(8,14,30,.35) 55%,rgba(8,14,30,.1) 100%),linear-gradient(0deg,rgba(8,14,30,.6),transparent 40%)}
+.slide .content{position:absolute;inset:0;z-index:2;display:flex;align-items:center}
+.slide .content .wrap{width:100%}
+.slide .txt{max-width:640px;padding-top:90px}
+.slide h1{font-family:var(--serif);font-size:clamp(40px,6vw,74px);line-height:1.05;margin:16px 0 20px;text-shadow:0 4px 30px rgba(0,0,0,.35)}
+.slide h1 em{color:var(--gold2);font-style:italic}
+.slide p{font-size:18px;opacity:.9;margin-bottom:32px;max-width:520px}
+.slide .txt>*{opacity:0;transform:translateY(24px);transition:.8s}
+.slide.active .txt>*{opacity:1;transform:none}
+.slide.active .txt>*:nth-child(2){transition-delay:.15s}
+.slide.active .txt>*:nth-child(3){transition-delay:.3s}
+.slide.active .txt>*:nth-child(4){transition-delay:.45s}
+.actions{display:flex;gap:14px;flex-wrap:wrap}
+.hero-ctrl{position:absolute;z-index:5;bottom:110px;left:0;right:0}
+.hero-ctrl .wrap{display:flex;align-items:center;gap:18px}
+.dots{display:flex;gap:8px}
+.dots button{width:34px;height:4px;border-radius:4px;background:rgba(255,255,255,.35);transition:.3s}
+.dots button.on{background:var(--gold2);width:56px}
+.arrows{margin-left:auto;display:flex;gap:10px}
+.arrows button{width:48px;height:48px;border-radius:50%;border:1.5px solid rgba(255,255,255,.5);display:grid;place-items:center}
+.arrows button:hover{background:var(--gold);border-color:var(--gold)}
+.arrows svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2.5}
+.live-pill{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.12);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.2);padding:7px 14px;border-radius:999px;font-size:13px;font-weight:600}
+.live-pill i{width:8px;height:8px;border-radius:50%;background:#ff4d4d;box-shadow:0 0 0 0 rgba(255,77,77,.7);animation:pulse 1.6s infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 10px rgba(255,77,77,0)}100%{box-shadow:0 0 0 0 rgba(255,77,77,0)}}
+
+/* ---------- times ---------- */
+.times{position:relative;z-index:6;margin-top:-70px}
+.times .grid{display:grid;grid-template-columns:repeat(4,1fr);background:#fff;border-radius:18px;box-shadow:0 20px 50px rgba(14,26,54,.14);overflow:hidden}
+.time{padding:26px 24px;border-right:1px solid var(--line);display:flex;gap:14px}
+.time:last-child{border:0;background:var(--navy);color:#fff}
+.time .ic{width:44px;height:44px;border-radius:12px;background:var(--goldsoft);display:grid;place-items:center;flex:none}
+.time:last-child .ic{background:rgba(255,255,255,.1)}
+.time .ic svg{width:22px;height:22px;stroke:var(--gold);fill:none;stroke-width:2}
+.time h4{font-size:15px}
+.time b{display:block;color:var(--gold);font-size:14px}
+.time p{font-size:13px;color:var(--muted)}
+.time:last-child p{color:rgba(255,255,255,.7)}
+
+section{padding:96px 0;scroll-margin-top:120px}
+#times{scroll-margin-top:140px}
+.title{text-align:center;max-width:640px;margin:0 auto 50px}
+.title h2{font-family:var(--serif);font-size:clamp(32px,4vw,44px);color:var(--navy);margin:10px 0 10px;line-height:1.15}
+.title p{color:var(--muted)}
+
+/* about */
+.about{display:grid;grid-template-columns:1.05fr 1fr;gap:64px;align-items:center}
+.about-media{position:relative}
+.about-media .main{position:relative;aspect-ratio:4/4.2;border-radius:22px;overflow:hidden;box-shadow:0 30px 60px rgba(14,26,54,.2)}
+.about-media .small{position:absolute;right:-26px;bottom:-30px;width:46%;aspect-ratio:1;border-radius:18px;overflow:hidden;border:6px solid var(--cream);box-shadow:0 20px 40px rgba(0,0,0,.2)}
+.about-media .badge{position:absolute;left:-18px;top:30px;background:var(--gold);color:var(--navy);border-radius:16px;padding:16px 20px;box-shadow:0 12px 30px rgba(0,0,0,.2)}
+.about-media .badge b{font-family:var(--serif);font-size:34px;display:block;line-height:1}
+.about-media .badge span{font-size:12px;font-weight:700}
+.about h2{font-family:var(--serif);font-size:clamp(32px,4vw,44px);color:var(--navy);margin:10px 0 18px;line-height:1.15}
+.about p{color:var(--muted);margin-bottom:16px}
+.checks{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:22px 0 30px}
+.checks li{display:flex;gap:8px;font-weight:600;font-size:14px;color:var(--navy)}
+.checks li::before{content:"✓";color:var(--gold);font-weight:900}
+.pastor{display:flex;align-items:center;gap:14px;margin-top:10px}
+.pastor .av{width:56px;height:56px;border-radius:50%;overflow:hidden;position:relative;border:3px solid var(--gold)}
+.pastor b{display:block;color:var(--navy)}
+.pastor span{font-size:13px;color:var(--muted)}
+
+/* ministries */
+.min{background:#fff}
+.mgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.mcard{position:relative;border-radius:18px;overflow:hidden;aspect-ratio:3/4;color:#fff;display:flex;align-items:flex-end;transition:.3s}
+.mcard:hover{transform:translateY(-6px)}
+.mcard::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(8,14,30,.92),rgba(8,14,30,.1) 60%)}
+.mcard .in{position:relative;z-index:2;padding:22px}
+.mcard h3{font-family:var(--serif);font-size:24px}
+.mcard p{font-size:13px;opacity:.85}
+.mcard .tag{display:inline-block;background:var(--gold);color:var(--navy);font-size:11px;font-weight:800;padding:4px 10px;border-radius:999px;margin-bottom:10px}
+
+/* project */
+.project{position:relative;color:#fff;overflow:hidden;padding:110px 0}
+.project::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(8,14,30,.92),rgba(8,14,30,.55))}
+.project .wrap{position:relative;z-index:2;display:grid;grid-template-columns:1.2fr 1fr;gap:50px;align-items:center}
+.project h2{font-family:var(--serif);font-size:clamp(32px,4vw,46px);line-height:1.15;margin:10px 0 16px}
+.project p{opacity:.85;margin-bottom:24px}
+.goal{background:rgba(255,255,255,.08);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:30px}
+.goal .row{display:flex;justify-content:space-between;font-size:14px;margin-bottom:10px}
+.goal .row b{font-size:26px;font-family:var(--serif);color:var(--gold2)}
+.bar{height:12px;background:rgba(255,255,255,.15);border-radius:10px;overflow:hidden;margin-bottom:12px}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:10px;transition:width 2s ease}
+.goal small{opacity:.75}
+.goal .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:22px 0}
+.goal .stats div{text-align:center;background:rgba(255,255,255,.06);border-radius:12px;padding:12px 6px}
+.goal .stats b{display:block;font-size:20px;color:#fff}
+.goal .stats span{font-size:11px;opacity:.7}
+
+/* sermons */
+.sgrid{display:grid;grid-template-columns:1.4fr 1fr;gap:24px}
+.sermon{border-radius:18px;overflow:hidden;background:#fff;box-shadow:0 10px 30px rgba(14,26,54,.07);transition:.3s}
+.sermon:hover{transform:translateY(-4px)}
+.sermon .thumb{position:relative;aspect-ratio:16/9;overflow:hidden}
+.sermon .play{position:absolute;inset:0;margin:auto;width:66px;height:66px;border-radius:50%;background:var(--gold);display:grid;place-items:center;z-index:2;box-shadow:0 0 0 10px rgba(212,166,69,.3)}
+.sermon .play::after{content:"";border-left:18px solid var(--navy);border-top:11px solid transparent;border-bottom:11px solid transparent;margin-left:5px}
+.sermon .meta{padding:18px 20px}
+.sermon .meta span{font-size:12px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.1em}
+.sermon .meta h4{font-family:var(--serif);font-size:21px;color:var(--navy);margin:4px 0}
+.sermon .meta p{font-size:13px;color:var(--muted)}
+.slist{display:grid;gap:16px}
+.slist .sermon{display:grid;grid-template-columns:150px 1fr}
+.slist .thumb{aspect-ratio:auto;height:100%}
+.slist .play{width:42px;height:42px;box-shadow:0 0 0 6px rgba(212,166,69,.3)}
+.slist .play::after{border-left-width:12px;border-top-width:7px;border-bottom-width:7px;margin-left:3px}
+.slist .meta h4{font-size:17px}
+
+/* events */
+.events{background:#fff}
+.egrid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.event{border-radius:18px;overflow:hidden;border:1px solid var(--line);background:#fff;transition:.3s}
+.event:hover{box-shadow:0 20px 40px rgba(14,26,54,.1);transform:translateY(-4px)}
+.event .img{position:relative;aspect-ratio:16/10;overflow:hidden}
+.event .date{position:absolute;z-index:2;top:14px;left:14px;background:#fff;border-radius:12px;padding:8px 12px;text-align:center;box-shadow:0 6px 16px rgba(0,0,0,.2)}
+.event .date b{display:block;font-family:var(--serif);font-size:24px;color:var(--navy);line-height:1}
+.event .date small{font-size:11px;font-weight:800;color:var(--gold);text-transform:uppercase}
+.event .body{padding:20px}
+.event h4{font-family:var(--serif);font-size:21px;color:var(--navy)}
+.event .when{font-size:13px;color:var(--muted);margin:6px 0 14px;display:flex;gap:14px;flex-wrap:wrap}
+.event a{font-size:14px;font-weight:700;color:var(--gold)}
+
+/* gallery */
+.gal{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:190px;gap:14px}
+.gal div{position:relative;border-radius:14px;overflow:hidden}
+.gal .tall{grid-row:span 2}
+.gal .wide{grid-column:span 2}
+
+/* give strip */
+.givebox{background:linear-gradient(135deg,var(--navy),var(--navy2));border-radius:26px;color:#fff;padding:54px;display:grid;grid-template-columns:1.2fr 1fr;gap:40px;align-items:center;position:relative;overflow:hidden}
+.givebox h2{font-family:var(--serif);font-size:clamp(30px,4vw,42px);line-height:1.15;margin:10px 0 12px}
+.givebox p{opacity:.8}
+.gcats{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.gcats button{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:14px;padding:14px;text-align:left;font-weight:600;font-size:14px;display:flex;align-items:center;gap:10px;transition:.2s}
+.gcats button:hover{background:var(--gold);color:var(--navy);border-color:var(--gold)}
+.gcats svg{width:22px;height:22px;stroke:var(--gold2);fill:none;stroke-width:1.8;flex:none}
+.gcats button:hover svg{stroke:var(--navy)}
+
+/* contact */
+.contact{display:grid;grid-template-columns:1fr 1.1fr;gap:30px}
+.cinfo{display:grid;gap:14px;align-content:start}
+.ci{display:flex;gap:14px;background:#fff;border-radius:16px;padding:18px;border:1px solid var(--line)}
+.ci .ic{width:46px;height:46px;border-radius:12px;background:var(--goldsoft);display:grid;place-items:center;flex:none}
+.ci svg{width:22px;height:22px;stroke:var(--gold);fill:none;stroke-width:2}
+.ci b{color:var(--navy);display:block}
+.ci span{color:var(--muted);font-size:14px}
+.map{position:relative;border-radius:16px;overflow:hidden;min-height:200px}
+.prayer{background:#fff;border-radius:20px;padding:32px;border:1px solid var(--line)}
+.prayer h3{font-family:var(--serif);font-size:28px;color:var(--navy)}
+.prayer p{color:var(--muted);font-size:14px;margin-bottom:18px}
+.field{display:grid;gap:6px;margin-bottom:14px}
+.field label{font-size:13px;font-weight:700;color:var(--navy)}
+.field input,.field textarea,.field select{font:inherit;padding:12px 14px;border:1.5px solid var(--line);border-radius:10px;background:var(--cream);outline:none;width:100%}
+.field input:focus,.field textarea:focus{border-color:var(--gold)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+footer{background:#070d1c;color:rgba(255,255,255,.7);padding:70px 0 26px;font-size:14px}
+.fcols{display:grid;grid-template-columns:1.6fr 1fr 1fr 1.3fr;gap:36px;margin-bottom:40px}
+footer h5{color:#fff;font-size:16px;margin-bottom:14px;font-family:var(--serif)}
+footer ul{list-style:none;display:grid;gap:8px}
+footer a:hover{color:var(--gold2)}
+.news{display:flex;margin-top:12px}
+.news input{flex:1;min-width:0;padding:12px;border-radius:10px 0 0 10px;border:0;font:inherit}
+.news button{background:var(--gold);color:var(--navy);font-weight:700;padding:0 16px;border-radius:0 10px 10px 0}
+.fbot{border-top:1px solid rgba(255,255,255,.1);padding-top:22px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:12.5px}
+
+.float-give{position:fixed;right:20px;bottom:20px;z-index:40;box-shadow:0 12px 30px rgba(0,0,0,.3)}
+
+/* ---------- donate modal ---------- */
+.modal-bg{position:fixed;inset:0;background:rgba(5,10,22,.7);backdrop-filter:blur(4px);z-index:100;display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;visibility:hidden;transition:.25s}
+.modal-bg.open{opacity:1;visibility:visible}
+.modal{background:#fff;border-radius:22px;width:min(640px,100%);max-height:92vh;overflow:auto;transform:translateY(20px) scale(.98);transition:.3s;box-shadow:0 40px 80px rgba(0,0,0,.4)}
+.modal-bg.open .modal{transform:none}
+.mhead{position:relative;background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;padding:26px 28px;overflow:hidden}
+.mhead h3{font-family:var(--serif);font-size:28px;position:relative}
+.mhead p{font-size:14px;opacity:.8;position:relative}
+.mhead .x{position:absolute;right:16px;top:16px;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.12);font-size:22px;z-index:2}
+.mbody{padding:24px 28px 28px}
+.step-label{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:4px 0 10px}
+.cats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:22px}
+.cat{border:1.5px solid var(--line);border-radius:14px;padding:12px 6px;text-align:center;font-size:12.5px;font-weight:700;color:var(--navy);transition:.2s;line-height:1.25}
+.cat svg{width:26px;height:26px;stroke:var(--gold);fill:none;stroke-width:1.8;display:block;margin:0 auto 6px}
+.cat:hover{border-color:var(--gold)}
+.cat.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.cat.on svg{stroke:var(--gold2)}
+.cat-desc{background:var(--goldsoft);border-radius:12px;padding:12px 14px;font-size:13.5px;color:var(--navy);margin:-8px 0 22px}
+.seg{display:flex;background:var(--cream);border:1px solid var(--line);border-radius:12px;padding:4px;gap:4px;margin-bottom:18px}
+.seg button{flex:1;padding:10px;border-radius:9px;font-weight:700;font-size:13.5px;color:var(--muted)}
+.seg button.on{background:#fff;color:var(--navy);box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.amt-row{display:flex;gap:10px;align-items:center;margin-bottom:10px}
+.amt-row select{font:inherit;font-weight:700;padding:12px;border:1.5px solid var(--line);border-radius:12px;background:#fff}
+.amts{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:10px}
+.amts button{border:1.5px solid var(--line);border-radius:12px;padding:12px 4px;font-weight:800;font-size:14px;color:var(--navy)}
+.amts button.on{border-color:var(--gold);background:var(--goldsoft)}
+.custom{position:relative;flex:1}
+.custom span{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-weight:800;color:var(--navy)}
+.custom input{width:100%;font:inherit;font-weight:800;font-size:18px;padding:12px 14px 12px 34px;border:1.5px solid var(--line);border-radius:12px;outline:none}
+.custom input:focus{border-color:var(--gold)}
+.summary{display:flex;justify-content:space-between;align-items:center;background:var(--navy);color:#fff;border-radius:14px;padding:16px 18px;margin:18px 0 14px}
+.summary b{font-size:22px;color:var(--gold2);font-family:var(--serif)}
+.summary span{font-size:13px;opacity:.85}
+.bank{display:none;background:var(--cream);border:1px dashed var(--gold);border-radius:14px;padding:18px}
+.bank div{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
+.bank div:last-of-type{border:0}
+.bank b{color:var(--navy)}
+.bank .copy{color:var(--gold);font-weight:800;font-size:12px;margin-left:8px}
+.secure{display:flex;justify-content:center;gap:8px;align-items:center;font-size:12px;color:var(--muted);margin-top:12px}
+.done{display:none;text-align:center;padding:30px 10px}
+.done .tick{width:84px;height:84px;border-radius:50%;background:var(--goldsoft);display:grid;place-items:center;margin:0 auto 18px}
+.done .tick svg{width:40px;height:40px;stroke:var(--gold);fill:none;stroke-width:3}
+.done h3{font-family:var(--serif);font-size:30px;color:var(--navy)}
+.done p{color:var(--muted);margin:8px auto 22px;max-width:400px}
+.demo-note{font-size:12px;background:#fff6e0;border-radius:10px;padding:10px;color:#7a5a12;margin-bottom:18px}
+.check{display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--muted);margin:4px 0 6px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,120px);background:var(--navy);color:#fff;padding:14px 22px;border-radius:12px;z-index:200;transition:.35s;font-size:14px;box-shadow:0 10px 30px rgba(0,0,0,.3)}
+.toast.show{transform:translate(-50%,0)}
+
+.reveal{opacity:0;transform:translateY(30px);transition:.9s}
+.reveal.in{opacity:1;transform:none}
+
+@media(max-width:1020px){
+  .menu,.topbar .info span.hide-md{display:none}
+  .burger{display:block}
+  .times .grid{grid-template-columns:1fr 1fr}
+  .time:nth-child(2){border-right:0}
+  .mgrid,.egrid{grid-template-columns:1fr 1fr}
+  .about,.project .wrap,.sgrid,.givebox,.contact{grid-template-columns:1fr}
+  .fcols{grid-template-columns:1fr 1fr}
+  .about-media .small{right:0}
+}
+@media(max-width:640px){
+  .topbar .info span:not(:first-child){display:none}
+  .nav-cta .btn{display:none}
+  .times .grid,.mgrid,.egrid,.fcols{grid-template-columns:1fr}
+  .time{border-right:0;border-bottom:1px solid var(--line)}
+  .gal{grid-template-columns:1fr 1fr;grid-auto-rows:140px}
+  .cats{grid-template-columns:repeat(2,1fr)}
+  .amts{grid-template-columns:repeat(3,1fr)}
+  .givebox{padding:30px 22px}
+  .slist .sermon{grid-template-columns:110px 1fr}
+  .hero-ctrl{bottom:90px}
+  .arrows{display:none}
+  .checks,.two{grid-template-columns:1fr}
+}
+
+.ribbon{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap}
+.ribbon-cta{background:var(--navy);color:#fff;font-weight:700;font-size:12px;padding:4px 12px;border-radius:999px}
+.ribbon-cta:hover{background:#000}
+.claim-bar{position:fixed;left:20px;bottom:20px;z-index:40;background:#fff;border-radius:16px;box-shadow:0 14px 40px rgba(0,0,0,.25);padding:14px 16px;display:flex;align-items:center;gap:14px;max-width:420px;border:1px solid var(--line)}
+.claim-bar b{display:block;color:var(--navy);font-size:14px}.claim-bar span{font-size:12.5px;color:var(--muted)}
+.claim-bar .btn{padding:10px 16px;font-size:13px;white-space:nowrap}
+.claim-bar .cx{position:absolute;top:-10px;right:-10px;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-size:15px;line-height:26px}
+.cm-opts{display:grid;gap:12px;margin-top:6px}
+.cm-opt{display:flex;align-items:center;gap:14px;border:1.5px solid var(--line);border-radius:14px;padding:16px;transition:.2s;color:var(--navy)}
+.cm-opt:hover{border-color:var(--gold);background:var(--goldsoft)}
+.cm-opt .ic{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;flex:none}
+.cm-opt .ic svg{width:24px;height:24px}
+.cm-opt b{display:block;font-size:15px}.cm-opt span{font-size:13px;color:var(--muted)}
+.cm-list{list-style:none;display:grid;gap:8px;margin:4px 0 20px;font-size:14px;color:var(--ink)}
+.cm-list li::before{content:"✓ ";color:var(--gold);font-weight:900}
+@media(max-width:640px){.claim-bar{left:12px;right:128px;bottom:14px;padding:10px 12px;gap:8px}.claim-bar b{font-size:13px}.claim-bar .btn{padding:9px 12px;font-size:12px}.claim-bar span{display:none}}
+.longname .brand b{font-size:18px;line-height:1.15;max-width:230px}.longname .menu>li>a,.longname .menu>li>button{padding:10px 9px;font-size:14px}.longname .nav-cta .btn{padding:12px 18px;white-space:nowrap}
+</style>
+</head>
+<body>
+
+<!-- ========== HEADER ========== -->
+<header class="site-head" id="head">
+  <div class="ribbon">Website preview designed for [[NAME]] by Mr Gentility Web Design. <button class="ribbon-cta" data-claim>Like it? Get this website →</button></div>
+  <div class="topbar"><div class="wrap">
+    <div class="info">
+      <span><svg viewBox="0 0 24 24"><path d="M12 22s7-7.5 7-12a7 7 0 0 0-14 0c0 4.5 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>[[ADDRESS]]</span>
+      <span><svg viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg>[[PHONE]]</span>
+      <span class="hide-md"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>[[EMAIL]]</span>
+    </div>
+    <div class="socials">
+      <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24"><path d="M15 3h-2a4 4 0 0 0-4 4v3H7v4h2v7h4v-7h3l1-4h-4V7a1 1 0 0 1 1-1h2z"/></svg></a>
+      <a href="#" aria-label="YouTube"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="4"/><path d="m10 9 5 3-5 3z"/></svg></a>
+      <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/></svg></a>
+    </div>
+  </div></div>
+  <div class="navbar"><div class="wrap">
+    <a href="#home" class="brand">
+      <svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="23" fill="#d4a645"/><circle cx="24" cy="24" r="19.5" fill="none" stroke="#0e1a36" stroke-width="1.2"/><path d="M12 31 10 17l7 6 7-10 7 10 7-6-2 14z" fill="#0e1a36"/><rect x="12" y="32.5" width="24" height="3.5" rx="1" fill="#0e1a36"/><circle cx="24" cy="12" r="1.8" fill="#0e1a36"/></svg>
+      <div><b class="brandname">[[BRAND]]</b><small>[[TAG]]</small></div>
+    </a>
+    <ul class="menu">
+      <li><a href="#home">Home</a></li>
+      <li><button>About <svg class="caret" viewBox="0 0 12 12"><path d="m2 4 4 4 4-4"/></svg></button>
+        <ul class="drop"><li><a href="#about">Our Story</a></li><li><a href="#about">Our Pastors</a></li><li><a href="#about">What We Believe</a></li><li><a href="#about">Vision & Mission</a></li></ul></li>
+      <li><button>Ministries <svg class="caret" viewBox="0 0 12 12"><path d="m2 4 4 4 4-4"/></svg></button>
+        <ul class="drop"><li><a href="#ministries">Children's Church</a></li><li><a href="#ministries">Youth & Teens</a></li><li><a href="#ministries">Women of Virtue</a></li><li><a href="#ministries">Men of Valour</a></li><li><a href="#ministries">Choir & Worship</a></li></ul></li>
+      <li><button>Media <svg class="caret" viewBox="0 0 12 12"><path d="m2 4 4 4 4-4"/></svg></button>
+        <ul class="drop"><li><a href="#sermons">Sermons</a></li><li><a href="#sermons">Watch Live</a></li><li><a href="#gallery">Photo Gallery</a></li><li><a href="#sermons">Podcast</a></li></ul></li>
+      <li><a href="#events">Events</a></li>
+      <li><a href="#contact">Prayer Request</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <div class="nav-cta">
+      <button class="btn btn-gold" data-give>Give Online</button>
+      <button class="burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+  </div></div>
+</header>
+
+<div class="drawer-bg" id="drawerBg"></div>
+<aside class="drawer">
+  <button class="close" id="drawerClose">×</button>
+  <nav>
+    <a class="dl" href="#home">Home</a>
+    <details><summary>About</summary><a href="#about">Our Story</a><a href="#about">Our Pastors</a><a href="#about">What We Believe</a><a href="#about">Vision & Mission</a></details>
+    <details><summary>Ministries</summary><a href="#ministries">Children's Church</a><a href="#ministries">Youth & Teens</a><a href="#ministries">Women of Virtue</a><a href="#ministries">Men of Valour</a><a href="#ministries">Choir & Worship</a></details>
+    <details><summary>Media</summary><a href="#sermons">Sermons</a><a href="#sermons">Watch Live</a><a href="#gallery">Photo Gallery</a></details>
+    <a class="dl" href="#events">Events</a>
+    <a class="dl" href="#contact">Prayer Request</a>
+    <a class="dl" href="#contact">Contact</a>
+  </nav>
+  <button class="btn btn-gold" data-give style="margin-top:24px;width:100%;justify-content:center">Give Online</button>
+</aside>
+
+<!-- ========== HERO SLIDER ========== -->
+<section class="hero" id="home" style="padding:0">
+  <div class="slide active">
+    <div class="bg" data-scene="worship" data-a="#2a1457" data-b="#0b1233" data-seed="7"></div>
+    <div class="content"><div class="wrap"><div class="txt">
+      <div class="eyebrow">Welcome Home</div>
+      <h1>A place to <em>belong</em>, believe and become.</h1>
+      <p>Experience Spirit-filled worship, life-changing Word and a family that loves you. Everyone is welcome here.</p>
+      <div class="actions"><a href="#times" class="btn btn-gold">Plan Your Visit</a><a href="#sermons" class="btn btn-line">Watch Online</a></div>
+    </div></div></div>
+  </div>
+  <div class="slide">
+    <div class="bg" data-scene="church"></div>
+    <div class="content"><div class="wrap"><div class="txt">
+      <div class="live-pill"><i></i> Sunday Service · 9:00 AM</div>
+      <h1>Join us this <em>Sunday</em> in [[AREA]].</h1>
+      <p>Come as you are. Worship with us in person or stream the service live from anywhere in the world.</p>
+      <div class="actions"><a href="#contact" class="btn btn-gold">Get Directions</a><a href="#sermons" class="btn btn-line">Watch Live</a></div>
+    </div></div></div>
+  </div>
+  <div class="slide">
+    <div class="bg" data-scene="cross"></div>
+    <div class="content"><div class="wrap"><div class="txt">
+      <div class="eyebrow">Partner With the Vision</div>
+      <h1>Your giving builds <em>His house.</em></h1>
+      <p>Tithes, offerings, the building project and missions: give securely online in under a minute.</p>
+      <div class="actions"><button class="btn btn-gold" data-give>Give Now</button><a href="#project" class="btn btn-line">Building Project</a></div>
+    </div></div></div>
+  </div>
+  <div class="slide">
+    <div class="bg" data-scene="worship" data-a="#5a1f2e" data-b="#140a1c" data-seed="21"></div>
+    <div class="content"><div class="wrap"><div class="txt">
+      <div class="eyebrow">Upcoming · 4 October</div>
+      <h1>Annual <em>Thanksgiving</em> Service</h1>
+      <p>A day of praise, dance and testimonies as we thank God for another year of His faithfulness.</p>
+      <div class="actions"><a href="#events" class="btn btn-gold">See Events</a><button class="btn btn-line" data-give="thanksgiving">Give Thanksgiving</button></div>
+    </div></div></div>
+  </div>
+  <div class="hero-ctrl"><div class="wrap">
+    <div class="dots" id="dots"></div>
+    <div class="arrows">
+      <button id="prev" aria-label="Previous"><svg viewBox="0 0 24 24"><path d="m15 5-7 7 7 7"/></svg></button>
+      <button id="next" aria-label="Next"><svg viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg></button>
+    </div>
+  </div></div>
+</section>
+
+<!-- ========== SERVICE TIMES ========== -->
+<div class="times" id="times"><div class="wrap"><div class="grid">
+  <div class="time"><div class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><div><h4>Sunday Worship</h4><b>7:30 AM & 9:00 AM</b><p>Two services, one family</p></div></div>
+  <div class="time"><div class="ic"><svg viewBox="0 0 24 24"><path d="M4 19V5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zm0 0a2 2 0 0 0 2 2h13"/></svg></div><div><h4>Bible Study</h4><b>Tuesdays · 6:00 PM</b><p>Grow deeper in the Word</p></div></div>
+  <div class="time"><div class="ic"><svg viewBox="0 0 24 24"><path d="M12 2c1 3 4 4 4 8a4 4 0 0 1-8 0c0-2 1-3 1-3s0 2 2 2c0-3 1-5 1-7z"/><path d="M6 22h12"/></svg></div><div><h4>Prayer & Miracle</h4><b>Thursdays · 6:00 PM</b><p>Midweek power service</p></div></div>
+  <div class="time"><div class="ic"><svg viewBox="0 0 24 24" style="stroke:#f0cf7e"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="m10 9 5 3-5 3z"/></svg></div><div><h4>Watch Online</h4><b>Live every Sunday</b><p>YouTube · Facebook · Website</p></div></div>
+</div></div></div>
+
+<!-- ========== ABOUT ========== -->
+<section id="about"><div class="wrap about">
+  <div class="about-media reveal">
+    <div class="main"><div data-scene="church" data-variant="day"></div></div>
+    <div class="small"><div data-scene="worship" data-a="#123a5e" data-b="#08152b" data-seed="3"></div></div>
+    <div class="badge"><b>15+</b><span>Years of Ministry</span></div>
+  </div>
+  <div class="reveal">
+    <div class="eyebrow">Who We Are</div>
+    <h2>Raising people who love God and transform their world</h2>
+    <p>[[NAME]] is a vibrant, Bible-believing family in [[AREA]]. We exist to help every person encounter Jesus, grow in faith and discover their God-given purpose.</p>
+    <p>Whether you are new to faith or have walked with God for years, there is a seat saved for you.</p>
+    <ul class="checks"><li>Spirit-filled worship</li><li>Sound Bible teaching</li><li>Thriving youth & children</li><li>Community outreach</li></ul>
+    <div style="display:flex;gap:20px;align-items:center;flex-wrap:wrap">
+      <a href="#contact" class="btn btn-navy">Learn More About Us</a>
+      <div class="pastor"><div class="av"><div data-scene="pastor" data-a="#3a2a10" data-b="#120b04"></div></div><div><b>Senior Pastor</b><span>Lead Pastor, [[SHORT]]</span></div></div>
+    </div>
+  </div>
+</div></section>
+
+<!-- ========== MINISTRIES ========== -->
+<section class="min" id="ministries"><div class="wrap">
+  <div class="title reveal"><div class="eyebrow">Get Connected</div><h2>There's a place for everyone</h2><p>Find your family within the family and grow alongside people who share your season of life.</p></div>
+  <div class="mgrid">
+    <a class="mcard reveal" href="#"><div data-scene="worship" data-a="#0f6a7a" data-b="#07202b" data-seed="11"></div><div class="in"><span class="tag">Ages 3–12</span><h3>Children's Church</h3><p>Fun, safe and Bible-centred every Sunday.</p></div></a>
+    <a class="mcard reveal" href="#"><div data-scene="worship" data-a="#7a2a8a" data-b="#1a0a2a" data-seed="14"></div><div class="in"><span class="tag">Ages 13–30</span><h3>Youth & Teens</h3><p>Worship nights, mentoring and real talk.</p></div></a>
+    <a class="mcard reveal" href="#"><div data-scene="worship" data-a="#8a3a4a" data-b="#200a14" data-seed="19"></div><div class="in"><span class="tag">Fellowship</span><h3>Women of Virtue</h3><p>Prayer, sisterhood and purpose.</p></div></a>
+    <a class="mcard reveal" href="#"><div data-scene="worship" data-a="#1f4a8a" data-b="#08122a" data-seed="25"></div><div class="in"><span class="tag">Fellowship</span><h3>Men of Valour</h3><p>Building godly men, husbands and leaders.</p></div></a>
+  </div>
+</div></section>
+
+<!-- ========== BUILDING PROJECT ========== -->
+<section class="project" id="project">
+  <div data-scene="church" data-variant="night" style="position:absolute;inset:0"></div>
+  <div class="wrap">
+    <div class="reveal">
+      <div class="eyebrow">Building Project</div>
+      <h2>Arise and build: our new 3,000-seat sanctuary</h2>
+      <p>We are raising a house of worship for the next generation, with space for families, a children's wing and a community centre that serves [[AREA]] and beyond.</p>
+      <button class="btn btn-gold" data-give="building">Give to the Building Fund</button>
+    </div>
+    <div class="goal reveal">
+      <div class="row"><span>Raised so far</span><span>Goal</span></div>
+      <div class="row"><b>[[RAISED]]</b><b style="color:#fff;opacity:.8">[[GOAL]]</b></div>
+      <div class="bar"><i id="goalbar" data-w="62%"></i></div>
+      <small>62% complete · Every seed counts</small>
+      <div class="stats"><div><b>1,240</b><span>Partners</span></div><div><b>62%</b><span>Funded</span></div><div><b>2027</b><span>Dedication</span></div></div>
+      <button class="btn btn-line" data-give="building" style="width:100%;justify-content:center">Become a Partner</button>
+    </div>
+  </div>
+</section>
+
+<!-- ========== SERMONS ========== -->
+<section id="sermons"><div class="wrap">
+  <div class="title reveal"><div class="eyebrow">Latest Messages</div><h2>Sermons & Livestream</h2><p>Catch up on recent messages or join our Sunday service live from anywhere.</p></div>
+  <div class="sgrid">
+    <a href="#" class="sermon reveal"><div class="thumb"><div data-scene="pastor" data-a="#2b1d5a" data-b="#090616"></div><span class="play"></span></div>
+      <div class="meta"><span>Sunday Service · Series: Kingdom Living</span><h4>Walking in Divine Purpose</h4><p>Senior Pastor · 52 mins</p></div></a>
+    <div class="slist">
+      <a href="#" class="sermon reveal"><div class="thumb"><div data-scene="pastor" data-a="#5a2a14" data-b="#160a04"></div><span class="play"></span></div><div class="meta"><span>Midweek</span><h4>The Power of Prayer</h4><p>41 mins</p></div></a>
+      <a href="#" class="sermon reveal"><div class="thumb"><div data-scene="pastor" data-a="#0f4a5a" data-b="#04141a"></div><span class="play"></span></div><div class="meta"><span>Sunday</span><h4>Faith for This Season</h4><p>48 mins</p></div></a>
+      <a href="#" class="sermon reveal"><div class="thumb"><div data-scene="pastor" data-a="#4a1a3a" data-b="#12060e"></div><span class="play"></span></div><div class="meta"><span>Youth Night</span><h4>Unashamed</h4><p>36 mins</p></div></a>
+    </div>
+  </div>
+</div></section>
+
+<!-- ========== EVENTS ========== -->
+<section class="events" id="events"><div class="wrap">
+  <div class="title reveal"><div class="eyebrow">What's Happening</div><h2>Upcoming Events</h2></div>
+  <div class="egrid">
+    <div class="event reveal"><div class="img"><div data-scene="worship" data-a="#6a3a0a" data-b="#1a0c02" data-seed="31"></div><div class="date"><b>04</b><small>Oct</small></div></div>
+      <div class="body"><h4>Annual Thanksgiving Service</h4><div class="when"><span>9:00 AM</span><span>Main Auditorium</span></div><a href="#">Event details →</a></div></div>
+    <div class="event reveal"><div class="img"><div data-scene="worship" data-a="#6a1a7a" data-b="#14061c" data-seed="33"></div><div class="date"><b>11</b><small>Oct</small></div></div>
+      <div class="body"><h4>Youth Night: Ignite</h4><div class="when"><span>5:00 PM</span><span>Youth Hall</span></div><a href="#">Event details →</a></div></div>
+    <div class="event reveal"><div class="img"><div data-scene="cross" data-variant="b"></div><div class="date"><b>18</b><small>Oct</small></div></div>
+      <div class="body"><h4>Community Outreach Day</h4><div class="when"><span>8:00 AM</span><span>[[AREA]] Community</span></div><a href="#">Event details →</a></div></div>
+  </div>
+</div></section>
+
+<!-- ========== GALLERY ========== -->
+<section id="gallery"><div class="wrap">
+  <div class="title reveal"><div class="eyebrow">Moments</div><h2>Life at [[SHORT]]</h2></div>
+  <div class="gal reveal">
+    <div class="tall"><div data-scene="worship" data-a="#3a1a6a" data-b="#0a0618" data-seed="41"></div></div>
+    <div class="wide"><div data-scene="church"></div></div>
+    <div><div data-scene="pastor" data-a="#1a3a6a" data-b="#060c18"></div></div>
+    <div><div data-scene="worship" data-a="#7a4a0a" data-b="#1a0e02" data-seed="44"></div></div>
+    <div class="wide"><div data-scene="cross"></div></div>
+  </div>
+</div></section>
+
+<!-- ========== GIVE STRIP ========== -->
+<section style="padding-top:0"><div class="wrap">
+  <div class="givebox reveal">
+    <div>
+      <div class="eyebrow">Give Online</div>
+      <h2>Honour God with your giving, from anywhere</h2>
+      <p>Choose where your gift goes. Give by card, bank transfer or set up recurring giving. It's safe, quick and simple.</p>
+      <button class="btn btn-gold" data-give style="margin-top:22px">Give Now</button>
+    </div>
+    <div class="gcats" id="quickCats"></div>
+  </div>
+</div></section>
+
+<!-- ========== CONTACT & PRAYER ========== -->
+<section id="contact" style="padding-top:0"><div class="wrap">
+  <div class="title reveal"><div class="eyebrow">Visit & Connect</div><h2>We'd love to meet you</h2></div>
+  <div class="contact">
+    <div class="cinfo reveal">
+      <div class="ci"><div class="ic"><svg viewBox="0 0 24 24"><path d="M12 22s7-7.5 7-12a7 7 0 0 0-14 0c0 4.5 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg></div><div><b>Address</b><span>[[ADDRESS]]</span></div></div>
+      <div class="ci"><div class="ic"><svg viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg></div><div><b>Phone / WhatsApp</b><span>[[PHONE]]</span></div></div>
+      <div class="ci"><div class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></div><div><b>Email</b><span>[[EMAIL]]</span></div></div>
+      <div class="map"><div data-scene="map"></div></div>
+    </div>
+    <form class="prayer reveal" id="prayerForm">
+      <h3>Send a Prayer Request</h3>
+      <p>Our prayer team prays over every request. You are not alone.</p>
+      <div class="two"><div class="field"><label>Full name</label><input required placeholder="Your name"></div><div class="field"><label>Phone</label><input placeholder="+234…"></div></div>
+      <div class="field"><label>Email</label><input type="email" placeholder="you@email.com"></div>
+      <div class="field"><label>Request type</label><select><option>Prayer request</option><option>Testimony</option><option>Counselling</option><option>First-time visitor</option></select></div>
+      <div class="field"><label>Your request</label><textarea rows="4" required placeholder="How can we pray for you?"></textarea></div>
+      <button class="btn btn-navy" style="width:100%;justify-content:center">Submit Request</button>
+    </form>
+  </div>
+</div></section>
+
+<footer><div class="wrap">
+  <div class="fcols">
+    <div><a href="#home" class="brand"><svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="23" fill="#d4a645"/><path d="M12 31 10 17l7 6 7-10 7 10 7-6-2 14z" fill="#0e1a36"/><rect x="12" y="32.5" width="24" height="3.5" rx="1" fill="#0e1a36"/></svg><div><b class="brandname">[[BRAND]]</b><small>[[TAG]]</small></div></a>
+      <p style="margin-top:16px">A family of believers raising people who love God and transform their world.</p></div>
+    <div><h5>Quick Links</h5><ul><li><a href="#about">About Us</a></li><li><a href="#ministries">Ministries</a></li><li><a href="#sermons">Sermons</a></li><li><a href="#events">Events</a></li></ul></div>
+    <div><h5>Service Times</h5><ul><li>Sun · 7:30 & 9:00 AM</li><li>Tue · 6:00 PM</li><li>Thu · 6:00 PM</li></ul></div>
+    <div><h5>Stay Updated</h5><p>Get news, events and devotionals in your inbox.</p><form class="news" onsubmit="event.preventDefault();toast('Thanks for subscribing! (demo)')"><input placeholder="Email address"><button>Join</button></form></div>
+  </div>
+  <div class="fbot"><span>© 2026 [[NAME]]. Sample design, all details are placeholders.</span><span>Designed by MR GENTILITY</span></div>
+</div></footer>
+
+<button class="btn btn-gold float-give" data-give>♥ Give</button>
+
+<!-- ========== DONATE MODAL ========== -->
+<div class="modal-bg" id="giveModal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="giveTitle">
+    <div class="mhead"><div data-scene="cross" style="position:absolute;inset:0;opacity:.35"></div>
+      <button class="x" id="giveClose" aria-label="Close">×</button>
+      <h3 id="giveTitle">Give to [[SHORT]]</h3><p>"Each of you should give what you have decided in your heart to give." (2 Cor 9:7)</p>
+    </div>
+    <div class="mbody" id="giveForm">
+      <div class="step-label">1 · Choose where to give</div>
+      <div class="cats" id="cats"></div>
+      <div class="cat-desc" id="catDesc"></div>
+
+      <div class="step-label">2 · Frequency</div>
+      <div class="seg" id="freq"><button class="on" data-f="One-time">One-time</button><button data-f="Weekly">Weekly</button><button data-f="Monthly">Monthly</button></div>
+
+      <div class="step-label">3 · Amount</div>
+      <div class="amt-row">
+        <select id="cur"><option value="NGN">₦ NGN</option><option value="GBP">£ GBP</option><option value="GHS">₵ GHS</option><option value="USD">$ USD</option><option value="EUR">€ EUR</option></select>
+        <div class="custom"><span id="curSym">₦</span><input id="amt" inputmode="numeric" placeholder="Enter amount"></div>
+      </div>
+      <div class="amts" id="amts"></div>
+
+      <div class="step-label" style="margin-top:18px">4 · Your details</div>
+      <div class="two"><div class="field"><label>Full name</label><input id="gname" placeholder="Your name"></div><div class="field"><label>Email</label><input id="gemail" type="email" placeholder="For your receipt"></div></div>
+      <label class="check"><input type="checkbox" id="anon"> Give anonymously</label>
+
+      <div class="step-label" style="margin-top:14px">5 · Payment method</div>
+      <div class="seg" id="method"><button class="on" data-m="card">Card / Online</button><button data-m="bank">Bank Transfer</button></div>
+      <div class="bank" id="bank">
+        <div><span>Account name</span><b>[[NAME]]</b></div>
+        <div><span>Bank</span><b>Sample Bank Plc</b></div>
+        <div><span>Account number</span><b>0123456789 <button class="copy" type="button" onclick="toast('Account number copied')">COPY</button></b></div>
+        <div><span>Narration</span><b id="narr">Tithe</b></div>
+      </div>
+
+      <div class="summary"><div><span>You are giving</span><br><b id="sumAmt">₦0</b></div><span id="sumTxt" style="text-align:right">Tithe · One-time</span></div>
+      <button class="btn btn-gold" id="giveBtn" style="width:100%;justify-content:center;font-size:16px;padding:16px">Give Now</button>
+      <div class="secure"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg> Secure payments via Paystack / Stripe · Instant email receipt</div>
+    </div>
+    <div class="done" id="giveDone">
+      <div class="tick"><svg viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></svg></div>
+      <h3>Thank you for giving!</h3>
+      <p id="doneTxt"></p>
+      <div class="demo-note">Preview only: no payment was taken. On the live site this step connects to your church's Paystack or Stripe account and emails a receipt.</div>
+      <button class="btn btn-navy" id="doneClose">Close</button>
+    </div>
+  </div>
+</div>
+
+<div class="claim-bar" id="claimBar"><button class="cx" id="claimX" aria-label="Hide">×</button><div><b>Like this website?</b><span>It can be live with your real photos and details.</span></div><button class="btn btn-navy" data-claim>Get This Website</button></div>
+
+<div class="modal-bg" id="claimModal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="claimTitle" style="width:min(500px,100%)">
+    <div class="mhead"><button class="x" id="claimClose" aria-label="Close">×</button>
+      <h3 id="claimTitle">Let's make this your website</h3><p>Talk to Mr Gentility Web Design about the [[SHORT]] website. We usually reply within a few hours.</p></div>
+    <div class="mbody">
+      <ul class="cm-list"><li>Your real photos, logo, pastors and service times</li><li>Online giving connected to your church account</li><li>Options for every budget, with payment plans</li></ul>
+      <div class="cm-opts">
+        <a class="cm-opt" id="waLink" href="https://wa.me/2348148735781?text=Hello%2C%20I%20saw%20the%20website%20preview%20for%20City%20of%20David%20Church%20and%20I%27d%20like%20to%20know%20more." target="_blank" rel="noopener">
+          <div class="ic" style="background:#e7f8ee"><svg viewBox="0 0 24 24" fill="#25d366"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.3-.9.9-.9 2.2s1 2.6 1.1 2.7c.1.2 1.9 2.9 4.6 4 1.7.7 2.4.8 3.2.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3z"/></svg></div>
+          <div><b>Chat on WhatsApp</b><span>+234 814 873 5781 · fastest reply</span></div></a>
+        <a class="cm-opt" href="mailto:mrgentilitywebdesign@gmail.com?subject=City%20of%20David%20Church%20website&body=Hello%20Mr%20Gentility%2C%0A%0AI%20saw%20the%20website%20preview%20for%20City%20of%20David%20Church%20and%20I%27d%20like%20to%20know%20more.%0A%0AName%3A%0APhone%3A%0A">
+          <div class="ic" style="background:var(--goldsoft)"><svg viewBox="0 0 24 24" fill="none" stroke="#d4a645" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></div>
+          <div><b>Send an Email</b><span>mrgentilitywebdesign@gmail.com</span></div></a>
+        <a class="cm-opt" href="tel:+2348148735781">
+          <div class="ic" style="background:#eaf0fb"><svg viewBox="0 0 24 24" fill="none" stroke="#0e1a36" stroke-width="2"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg></div>
+          <div><b>Call Us</b><span>+234 814 873 5781</span></div></a>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ---------- load this church's details (?c=slug) ---------- */
+(function(){
+  const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const MONEY={GBP:['£186,400','£300,000'],USD:['$186,400','$300,000'],EUR:['€186,400','€300,000'],NGN:['₦186,400,000','₦300M'],GHS:['₵1,864,000','₵3M']};
+  function apply(C){
+    window.__C=C;
+    const short=C.short||C.name, words=short.split(' '), last=words.pop();
+    const m=MONEY[C.cur]||MONEY.NGN;
+    const T={NAME:C.name,SHORT:short,AREA:C.area||C.city,ADDRESS:C.address||((C.area?C.area+', ':'')+C.city),PHONE:C.phone||'Your church phone',EMAIL:C.email||'Your church email',TAG:'Church · '+(C.area||C.city),RAISED:m[0],GOAL:m[1]};
+    const w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);const ns=[];while(w.nextNode())ns.push(w.currentNode);
+    if(!C.phone)ns.filter(n=>n.nodeValue.indexOf('[[PHONE]]')>-1).forEach(n=>{const h=n.parentElement.closest('.ci')||n.parentElement.closest('span');if(h)h.style.display='none'});
+    if(!C.email)ns.filter(n=>n.nodeValue.indexOf('[[EMAIL]]')>-1).forEach(n=>{const h=n.parentElement.closest('.ci')||n.parentElement.closest('span');if(h)h.style.display='none'});
+    if(short.length>16)document.documentElement.classList.add('longname');
+    ns.forEach(n=>{if(n.nodeValue.indexOf('[[')>-1)n.nodeValue=n.nodeValue.replace(/\[\[(\w+)\]\]/g,(x,k)=>T[k]!=null?T[k]:x)});
+    document.querySelectorAll('.brandname').forEach(b=>b.innerHTML=(words.length?esc(words.join(' '))+' ':'')+'<em>'+esc(last)+'</em>');
+    document.title=C.name+' | Website Preview';
+    const sel=document.getElementById('cur');if(sel&&C.cur)sel.value=C.cur;
+    const wa=document.getElementById('waLink');if(wa)wa.href='https://wa.me/2348148735781?text='+encodeURIComponent('Hello, I saw the website preview for '+C.name+' and I would like to know more.');
+    document.querySelectorAll('a[href^="mailto:mrgentility"]').forEach(a=>a.href='mailto:mrgentilitywebdesign@gmail.com?subject='+encodeURIComponent(C.name+' website')+'&body='+encodeURIComponent('Hello Mr Gentility,\n\nI saw the website preview for '+C.name+' and I would like to know more.\n\nName:\nPhone:\n'));
+  }
+  const DEF={name:'Your Church',short:'Your Church',city:'Your City',area:'',cur:'GBP'};
+  async function start(){
+    let C=window.__DATA||null;
+    if(!C){const slug=new URLSearchParams(location.search).get('c');
+      if(slug){try{const r=await fetch('data.json?v='+Date.now());const all=await r.json();C=all.find(x=>x.slug===slug)||null}catch(e){}}}
+    apply(C||DEF);window.__main();
+  }
+  document.readyState==='loading'?document.addEventListener('DOMContentLoaded',start):start();
+})();
+</script>
+<script>
+window.__main=function(){
+/* ---------- illustrated scenes (swap for the church's real photos on launch) ---------- */
+function rng(s){return function(){s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+let N=0;const uid=()=> 's'+(++N);
+const open=(id)=>`<svg class="scene" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg"><defs>`;
+
+function worship(a='#2a1457',b='#0b1233',seed=7){
+  const r=rng(+seed),id=uid();
+  let s=open()+`<linearGradient id="${id}g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient>
+  <linearGradient id="${id}b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".7"/><stop offset=".8" stop-color="#fff" stop-opacity="0"/></linearGradient>
+  <radialGradient id="${id}r" cx=".5" cy=".62" r=".55"><stop offset="0" stop-color="#ffd98a" stop-opacity=".75"/><stop offset=".5" stop-color="#ff9f6b" stop-opacity=".2"/><stop offset="1" stop-color="#ffd98a" stop-opacity="0"/></radialGradient>
+  <filter id="${id}f"><feGaussianBlur stdDeviation="7"/></filter><filter id="${id}f2"><feGaussianBlur stdDeviation="2"/></filter></defs>
+  <rect width="1600" height="900" fill="url(#${id}g)"/>`;
+  for(let i=0;i<8;i++){const x=120+i*195+r()*60,sp=120+r()*200,tx=x+(r()-.5)*600;
+    s+=`<polygon points="${x-10},20 ${x+10},20 ${tx+sp},900 ${tx-sp},900" fill="url(#${id}b)" opacity="${.18+r()*.3}"/>`}
+  s+=`<rect width="1600" height="900" fill="url(#${id}r)"/>`;
+  s+=`<rect x="0" y="0" width="1600" height="26" fill="#000" opacity=".5"/>`;
+  for(let i=0;i<8;i++){const x=120+i*195;s+=`<circle cx="${x+30}" cy="22" r="10" fill="#fff" opacity=".95" filter="url(#${id}f2)"/><circle cx="${x+30}" cy="22" r="30" fill="#ffe7b0" opacity=".35" filter="url(#${id}f)"/>`}
+  // stage + big glowing cross
+  s+=`<g opacity=".55" filter="url(#${id}f2)"><rect x="788" y="220" width="24" height="300" fill="#fff4d6"/><rect x="720" y="290" width="160" height="24" fill="#fff4d6"/></g>`;
+  for(let i=0;i<60;i++)s+=`<circle cx="${r()*1600}" cy="${80+r()*460}" r="${3+r()*16}" fill="${r()<.5?'#fff':'#ffd98a'}" opacity="${.06+r()*.22}" filter="url(#${id}f)"/>`;
+  const rows=[{y:690,sc:.62,c:'#1c1230'},{y:770,sc:.8,c:'#110a20'},{y:870,sc:1.05,c:'#06040c'}];
+  rows.forEach((row,ri)=>{let x=-30+r()*40;
+    while(x<1660){const sc=row.sc*(.88+r()*.24),hy=row.y-40*sc+r()*16,hr=21*sc,aw=40*sc,ay=hy+hr*2.1;
+      if(r()<(ri==2?.5:.38)){const up=(140+r()*60)*sc;
+        const arm=d=>{const hx=x+d*(aw+(20+r()*50)*sc),hy2=ay-up;
+          s+=`<path d="M${x+d*aw*.8} ${ay+10*sc} Q${x+d*aw*1.4} ${ay-up*.45} ${hx} ${hy2}" stroke="${row.c}" stroke-width="${15*sc}" stroke-linecap="round" fill="none"/><ellipse cx="${hx}" cy="${hy2-8*sc}" rx="${8*sc}" ry="${12*sc}" fill="${row.c}"/>`};
+        if(r()<.65){arm(-1);arm(1)}else arm(r()<.5?-1:1)}
+      s+=`<path d="M${x-56*sc} ${hy+260*sc} Q${x-58*sc} ${hy+hr*1.9} ${x} ${hy+hr*1.7} Q${x+58*sc} ${hy+hr*1.9} ${x+56*sc} ${hy+260*sc}Z" fill="${row.c}"/><rect x="${x-8*sc}" y="${hy+hr*.8}" width="${16*sc}" height="${hr}" fill="${row.c}"/><circle cx="${x}" cy="${hy}" r="${hr}" fill="${row.c}"/>`;
+      x+=(62+r()*44)*row.sc}});
+  return s+`</svg>`;
+}
+
+function church(variant){
+  const id=uid(),r=rng(99+(variant=='night'?5:variant=='day'?9:0));
+  const P={sunset:['#1b1745','#6d3b7c','#f0864a','#ffcf70'],night:['#050a1c','#0e1f45','#243a70','#39508a'],day:['#2f5d9b','#6f9fd4','#f5c98a','#ffe2a8']}[variant||'sunset'];
+  const sil=variant=='day'?'#1d2440':'#150c22';
+  let s=open()+`<linearGradient id="${id}g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${P[0]}"/><stop offset=".45" stop-color="${P[1]}"/><stop offset=".78" stop-color="${P[2]}"/><stop offset="1" stop-color="${P[3]}"/></linearGradient>
+  <radialGradient id="${id}s" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fff3c4"/><stop offset=".25" stop-color="#ffd27a" stop-opacity=".9"/><stop offset="1" stop-color="#ff9d4a" stop-opacity="0"/></radialGradient>
+  <filter id="${id}f"><feGaussianBlur stdDeviation="10"/></filter><filter id="${id}w"><feGaussianBlur stdDeviation="4"/></filter></defs>
+  <rect width="1600" height="900" fill="url(#${id}g)"/>`;
+  for(let i=0;i<(variant=='night'?140:50);i++)s+=`<circle cx="${r()*1600}" cy="${r()*420}" r="${r()*1.8+.4}" fill="#fff" opacity="${.3+r()*.7}"/>`;
+  if(variant=='night')s+=`<circle cx="1260" cy="170" r="60" fill="#fdf3d0"/><circle cx="1260" cy="170" r="160" fill="#fdf3d0" opacity=".15" filter="url(#${id}f)"/>`;
+  else s+=`<circle cx="1180" cy="600" r="380" fill="url(#${id}s)"/>`;
+  for(let i=0;i<5;i++)s+=`<ellipse cx="${r()*1600}" cy="${140+r()*260}" rx="${140+r()*200}" ry="${18+r()*20}" fill="#fff" opacity="${variant=='night'?.05:.18}" filter="url(#${id}f)"/>`;
+  s+=`<path d="M0 700 Q300 600 600 680 T1200 650 T1600 690 V900 H0Z" fill="${sil}" opacity=".55"/>`;
+  // church
+  const g=variant=='night'?'#ffd46b':'#ffcf6a';
+  s+=`<g fill="${sil}"><rect x="520" y="480" width="520" height="300"/><polygon points="495,492 780,330 1065,492"/>
+  <rect x="690" y="250" width="180" height="260"/><polygon points="670,262 780,90 890,262"/>
+  <rect x="775" y="10" width="12" height="90"/><rect x="752" y="36" width="58" height="12"/>
+  <rect x="1040" y="560" width="190" height="220"/><polygon points="1025,570 1135,480 1245,570"/>
+  <rect x="330" y="580" width="190" height="200"/><polygon points="315,590 425,510 535,590"/></g>`;
+  const win=(x,y,w,h)=>`<path d="M${x} ${y+h} V${y+w/2} A${w/2} ${w/2} 0 0 1 ${x+w} ${y+w/2} V${y+h}Z" fill="${g}"/>`;
+  let wg='';[560,640,900,980].forEach(x=>wg+=win(x,560,44,110));[1080,1160].forEach(x=>wg+=win(x,610,36,80));[370,450].forEach(x=>wg+=win(x,630,36,80));
+  wg+=`<circle cx="780" cy="330" r="42" fill="${g}"/>`+win(740,640,80,140)+win(752,380,56,100);
+  s+=`<g filter="url(#${id}w)" opacity=".9">${wg}</g><g>${wg}</g>`;
+  s+=`<g stroke="${sil}" stroke-width="5" fill="none"><path d="M780 288 V372 M738 330 H822"/></g>`;
+  // trees
+  for(let i=0;i<14;i++){const x=i<7?r()*300:1260+r()*340,h=120+r()*140;s+=`<ellipse cx="${x}" cy="${780-h/2}" rx="${40+r()*30}" ry="${h/2}" fill="${sil}"/>`}
+  s+=`<path d="M0 760 Q400 730 800 770 T1600 750 V900 H0Z" fill="${sil}"/>`;
+  s+=`<path d="M700 900 L760 780 H800 L860 900Z" fill="${g}" opacity=".18"/>`;
+  if(variant!='night')for(let i=0;i<7;i++){const x=300+r()*500,y=150+r()*200,w=10+r()*10;s+=`<path d="M${x-w} ${y} q${w/2} -${w/2} ${w} 0 q${w/2} -${w/2} ${w} 0" stroke="${sil}" stroke-width="3" fill="none"/>`}
+  return s+`</svg>`;
+}
+
+function cross(variant){
+  const id=uid(),r=rng(variant=='b'?55:77);
+  const P=variant=='b'?['#0d3a3a','#2f7a6a','#f3d38a']:['#0a1636','#2b4a8c','#f6c56b'];
+  let s=open()+`<linearGradient id="${id}g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${P[0]}"/><stop offset=".55" stop-color="${P[1]}"/><stop offset="1" stop-color="${P[2]}"/></linearGradient>
+  <radialGradient id="${id}r" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fffbe6"/><stop offset=".2" stop-color="#ffe29a" stop-opacity=".85"/><stop offset="1" stop-color="#ffcf6a" stop-opacity="0"/></radialGradient>
+  <filter id="${id}f"><feGaussianBlur stdDeviation="14"/></filter></defs><rect width="1600" height="900" fill="url(#${id}g)"/>`;
+  const cx=1050,cy=560;
+  for(let i=0;i<36;i++){const a=i/36*Math.PI*2,a2=a+.035;s+=`<polygon points="${cx},${cy} ${cx+Math.cos(a)*1800},${cy+Math.sin(a)*1800} ${cx+Math.cos(a2)*1800},${cy+Math.sin(a2)*1800}" fill="#fff" opacity="${.03+r()*.06}"/>`}
+  s+=`<circle cx="${cx}" cy="${cy}" r="420" fill="url(#${id}r)"/>`;
+  for(let i=0;i<9;i++)s+=`<ellipse cx="${r()*1600}" cy="${420+r()*260}" rx="${200+r()*260}" ry="${40+r()*40}" fill="#fff" opacity="${.12+r()*.18}" filter="url(#${id}f)"/>`;
+  s+=`<path d="M0 760 Q400 640 800 700 Q1050 560 1300 660 T1600 700 V900 H0Z" fill="#0d0a18"/>`;
+  s+=`<g fill="#0d0a18"><rect x="${cx-14}" y="${cy-250}" width="28" height="360"/><rect x="${cx-100}" y="${cy-180}" width="200" height="26"/></g>`;
+  s+=`<g fill="#0d0a18" opacity=".85"><rect x="${cx-270}" y="${cy-60}" width="14" height="190"/><rect x="${cx-316}" y="${cy-20}" width="106" height="12"/><rect x="${cx+256}" y="${cy-40}" width="14" height="180"/><rect x="${cx+210}" y="${cy}" width="106" height="12"/></g>`;
+  return s+`</svg>`;
+}
+
+function pastor(a='#2b1d5a',b='#090616'){
+  const id=uid(),r=rng(a.length*7+a.charCodeAt(2));
+  let s=open()+`<linearGradient id="${id}g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient>
+  <radialGradient id="${id}r" cx=".5" cy=".35" r=".5"><stop offset="0" stop-color="#ffe3a8" stop-opacity=".55"/><stop offset="1" stop-color="#ffe3a8" stop-opacity="0"/></radialGradient>
+  <linearGradient id="${id}b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+  <filter id="${id}f"><feGaussianBlur stdDeviation="8"/></filter></defs><rect width="1600" height="900" fill="url(#${id}g)"/>
+  <polygon points="760,0 840,0 1100,900 500,900" fill="url(#${id}b)" opacity=".5"/><rect width="1600" height="900" fill="url(#${id}r)"/>`;
+  for(let i=0;i<30;i++)s+=`<circle cx="${r()*1600}" cy="${r()*700}" r="${4+r()*20}" fill="#ffe3a8" opacity="${.05+r()*.15}" filter="url(#${id}f)"/>`;
+  s+=`<g fill="#050309"><circle cx="800" cy="330" r="70"/><rect x="775" y="390" width="50" height="40"/>
+  <path d="M640 900 V520 Q640 430 800 420 Q960 430 960 520 V900Z"/>
+  <path d="M930 470 Q1040 380 1060 250" stroke="#050309" stroke-width="44" stroke-linecap="round" fill="none"/><ellipse cx="1062" cy="232" rx="24" ry="32"/>
+  <path d="M600 900 L630 640 H970 L1000 900Z" fill="#1a1426"/><rect x="610" y="620" width="380" height="30" rx="6" fill="#241c34"/></g>
+  <g stroke="#d4a645" stroke-width="6" opacity=".8"><path d="M800 690 V800 M765 725 H835"/></g>`;
+  return s+`</svg>`;
+}
+
+function map(){
+  const id=uid(),r=rng(5);
+  let s=`<svg class="scene" viewBox="0 0 800 400" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg"><rect width="800" height="400" fill="#e9eef3"/>`;
+  s+=`<path d="M0 320 Q200 280 400 330 T800 300 V400 H0Z" fill="#b9d6ea"/>`;
+  for(let i=0;i<14;i++)s+=`<rect x="${r()*760}" y="${r()*260}" width="${40+r()*80}" height="${30+r()*50}" rx="4" fill="${r()<.3?'#d6e8cf':'#f7f9fb'}"/>`;
+  s+=`<g stroke="#fff" stroke-width="14" fill="none"><path d="M0 140 H800 M260 0 V330 M540 0 V320 M0 230 Q400 190 800 240"/></g><g stroke="#f5d78e" stroke-width="7" fill="none"><path d="M0 140 H800"/></g>`;
+  s+=`<g transform="translate(400 150)"><circle r="40" fill="#d4a645" opacity=".25"/><path d="M0 22 C-6 10 -20 0 -20 -14 A20 20 0 0 1 20 -14 C20 0 6 10 0 22Z" fill="#0e1a36"/><circle cy="-14" r="7" fill="#d4a645"/></g>`;
+  s+=`<rect x="300" y="190" width="200" height="34" rx="17" fill="#0e1a36"/><text x="400" y="212" text-anchor="middle" font-family="system-ui,Arial" font-size="14" font-weight="700" fill="#fff">${(window.__C&&window.__C.name)||"Your Church"}</text></svg>`;
+  return s;
+}
+
+document.querySelectorAll('[data-scene]').forEach(el=>{
+  const t=el.dataset.scene,d=el.dataset;
+  if(!el.style.position)el.style.cssText+='position:absolute;inset:0';
+  el.innerHTML=t=='worship'?worship(d.a,d.b,d.seed):t=='church'?church(d.variant):t=='cross'?cross(d.variant):t=='pastor'?pastor(d.a,d.b):map();
+});
+
+/* ---------- header / menu ---------- */
+const head=document.getElementById('head');
+const onScroll=()=>head.classList.toggle('solid',scrollY>60);addEventListener('scroll',onScroll);onScroll();
+document.getElementById('burger').onclick=()=>document.body.classList.add('drawer-open');
+['drawerClose','drawerBg'].forEach(i=>document.getElementById(i).onclick=()=>document.body.classList.remove('drawer-open'));
+document.querySelectorAll('.drawer a').forEach(a=>a.addEventListener('click',()=>document.body.classList.remove('drawer-open')));
+
+/* ---------- slider ---------- */
+const slides=[...document.querySelectorAll('.slide')],dots=document.getElementById('dots');let cur=0,timer;
+slides.forEach((_,i)=>{const b=document.createElement('button');b.setAttribute('aria-label','Slide '+(i+1));b.onclick=()=>go(i);dots.appendChild(b)});
+function go(i){slides[cur].classList.remove('active');dots.children[cur].classList.remove('on');cur=(i+slides.length)%slides.length;slides[cur].classList.add('active');dots.children[cur].classList.add('on');clearInterval(timer);timer=setInterval(()=>go(cur+1),6500)}
+document.getElementById('prev').onclick=()=>go(cur-1);document.getElementById('next').onclick=()=>go(cur+1);go(0);
+
+/* ---------- reveal on scroll ---------- */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12});
+document.querySelectorAll('.reveal').forEach(e=>io.observe(e));
+const gb=document.getElementById('goalbar');new IntersectionObserver((es,o)=>{if(es[0].isIntersecting){gb.style.width=gb.dataset.w;o.disconnect()}}).observe(gb);
+
+/* ---------- giving ---------- */
+const I={
+ tithe:'<path d="M4 12h16M12 4v16"/><circle cx="12" cy="12" r="9"/>',
+ offering:'<path d="M12 21s-8-5-8-11a4 4 0 0 1 8-1 4 4 0 0 1 8 1c0 6-8 11-8 11z"/>',
+ thanksgiving:'<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/>',
+ building:'<path d="M3 21h18M5 21V10l7-6 7 6v11M10 21v-5h4v5M12 4V1M10.5 2.5h3"/>',
+ missions:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
+ welfare:'<path d="M3 13h4l3 3h4a2 2 0 0 0 0-4h-3M7 13v7M14 9a3 3 0 1 0-3-3"/><path d="M21 14l-5 4"/>',
+ seed:'<path d="M12 21V11M12 11c0-4 3-7 8-7 0 5-3 7-8 7zM12 14c0-3-2-5-7-5 0 4 2 5 7 5z"/>',
+ youth:'<circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20c0-4 3-6 6-6s6 2 6 6M15 20c0-3 1-5 3-5s3 2 3 5"/>'
+};
+const CATS=[
+ ['tithe','Tithe','Your 10% honouring God with the first fruits of your increase (Malachi 3:10).'],
+ ['offering','Offering','General offering supporting worship services and the day-to-day work of the church.'],
+ ['thanksgiving','Thanksgiving','Celebrate God\'s faithfulness: birthdays, promotions, answered prayers and testimonies.'],
+ ['building','Building Fund','Help complete our new 3,000-seat sanctuary and community centre.'],
+ ['missions','Missions','Support evangelism, church planting and outreach to unreached communities.'],
+ ['welfare','Welfare','Care for widows, the elderly, the sick and families in need.'],
+ ['seed','Seed / Vow','Redeem a vow or sow a special seed of faith.'],
+ ['youth','Children & Youth','Fund camps, materials and programmes for the next generation.']
+];
+const PRE={NGN:[5000,10000,25000,50000,100000],GBP:[10,25,50,100,250],USD:[10,25,50,100,250],EUR:[10,25,50,100,250],GHS:[50,100,200,500,1000]};
+const SYM={NGN:'₦',GBP:'£',USD:'$',EUR:'€',GHS:'₵'};
+const CUR0=(window.__C&&PRE[window.__C.cur])?window.__C.cur:'NGN';
+let st={cat:'tithe',freq:'One-time',cur:CUR0,amt:PRE[CUR0][1],method:'card'};
+const $=id=>document.getElementById(id);
+const fmt=(v,c=st.cur)=>SYM[c]+Number(v||0).toLocaleString('en-US');
+
+$('cats').innerHTML=CATS.map(([k,l])=>`<button type="button" class="cat" data-k="${k}"><svg viewBox="0 0 24 24">${I[k]}</svg>${l}</button>`).join('');
+$('quickCats').innerHTML=CATS.slice(0,6).map(([k,l])=>`<button type="button" data-give="${k}"><svg viewBox="0 0 24 24">${I[k]}</svg>${l}</button>`).join('');
+
+function render(){
+  document.querySelectorAll('.cat').forEach(b=>b.classList.toggle('on',b.dataset.k==st.cat));
+  const c=CATS.find(x=>x[0]==st.cat);$('catDesc').textContent=c[2];
+  $('curSym').textContent=SYM[st.cur];
+  $('amts').innerHTML=PRE[st.cur].map(v=>`<button type="button" class="${v==st.amt?'on':''}" data-v="${v}">${fmt(v)}</button>`).join('');
+  $('amt').value=st.amt?Number(st.amt).toLocaleString('en-US'):'';
+  $('sumAmt').textContent=fmt(st.amt);
+  $('sumTxt').innerHTML=c[1]+' · '+st.freq+(st.freq!='One-time'?'<br>recurring':'');
+  $('narr').textContent=c[1];
+  $('bank').style.display=st.method=='bank'?'block':'none';
+  $('giveBtn').textContent=st.method=='bank'?'I\'ve Made the Transfer':'Give '+fmt(st.amt)+(st.freq!='One-time'?' '+st.freq.toLowerCase():'');
+}
+$('cats').onclick=e=>{const b=e.target.closest('.cat');if(b){st.cat=b.dataset.k;render()}};
+$('amts').onclick=e=>{const b=e.target.closest('button');if(b){st.amt=+b.dataset.v;render()}};
+$('amt').oninput=e=>{st.amt=+e.target.value.replace(/\D/g,'');$('sumAmt').textContent=fmt(st.amt);document.querySelectorAll('#amts button').forEach(b=>b.classList.toggle('on',+b.dataset.v==st.amt));$('giveBtn').textContent='Give '+fmt(st.amt)};
+$('amt').onblur=render;
+$('cur').onchange=e=>{st.cur=e.target.value;st.amt=PRE[st.cur][1];render()};
+$('freq').onclick=e=>{const b=e.target.closest('button');if(!b)return;st.freq=b.dataset.f;[...$('freq').children].forEach(x=>x.classList.toggle('on',x==b));render()};
+$('method').onclick=e=>{const b=e.target.closest('button');if(!b)return;st.method=b.dataset.m;[...$('method').children].forEach(x=>x.classList.toggle('on',x==b));render()};
+
+function openGive(cat){if(cat&&CATS.some(c=>c[0]==cat))st.cat=cat;$('giveForm').style.display='block';$('giveDone').style.display='none';render();$('giveModal').classList.add('open');document.body.style.overflow='hidden';document.body.classList.remove('drawer-open')}
+function closeGive(){$('giveModal').classList.remove('open');document.body.style.overflow=''}
+document.addEventListener('click',e=>{const g=e.target.closest('[data-give]');if(g){e.preventDefault();openGive(g.dataset.give)}});
+$('giveClose').onclick=closeGive;$('doneClose').onclick=closeGive;
+$('giveModal').onclick=e=>{if(e.target.id=='giveModal')closeGive()};
+addEventListener('keydown',e=>{if(e.key=='Escape')closeGive()});
+$('giveBtn').onclick=()=>{
+  if(!st.amt){toast('Please enter an amount');$('amt').focus();return}
+  const c=CATS.find(x=>x[0]==st.cat)[1],n=$('anon').checked?'':($('gname').value.trim().split(' ')[0]||'');
+  $('doneTxt').textContent=`${n?n+', your':'Your'} ${st.freq.toLowerCase()} gift of ${fmt(st.amt)} towards ${c} has been received. God bless you abundantly!`;
+  $('giveForm').style.display='none';$('giveDone').style.display='block';
+};
+window.toast=toast;
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2600)}
+$('prayerForm').onsubmit=e=>{e.preventDefault();e.target.reset();toast('Thank you. Our prayer team will stand with you. (demo)')};
+
+/* keep visitors on this page: placeholder links show a note instead of navigating */
+document.addEventListener('click',e=>{const a=e.target.closest('a[href]');if(!a)return;const h=a.getAttribute('href');
+  if(h=='#'){e.preventDefault();
+    const m=a.closest('.sermon')?'▶ The sermon video plays here on the live site':a.closest('.mcard')?'This opens the full ministry page on the live site':a.closest('.event')?'Full event details and RSVP open here on the live site':a.closest('.socials')?'Links to the church\'s social media on the live site':'Available on the live site';
+    toast(m)}
+  else if(h.length>1){const t=document.querySelector(h);if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth'})}}
+});
+
+/* claim / contact the designer */
+const claimM=document.getElementById('claimModal');
+document.addEventListener('click',e=>{if(e.target.closest('[data-claim]')){e.preventDefault();claimM.classList.add('open');document.body.style.overflow='hidden'}});
+const closeClaim=()=>{claimM.classList.remove('open');document.body.style.overflow=''};
+document.getElementById('claimClose').onclick=closeClaim;claimM.onclick=e=>{if(e.target===claimM)closeClaim()};
+addEventListener('keydown',e=>{if(e.key=='Escape')closeClaim()});
+document.getElementById('claimX').onclick=()=>document.getElementById('claimBar').style.display='none';
+setTimeout(()=>{let seen=false;try{seen=!!sessionStorage.getItem('cm');sessionStorage.setItem('cm',1)}catch(e){};if(!seen&&!document.querySelector('.modal-bg.open')){claimM.classList.add('open');document.body.style.overflow='hidden'}},45000);
+render();
+
+};
+</script>
+</body>
+</html>
